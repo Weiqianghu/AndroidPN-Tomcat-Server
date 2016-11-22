@@ -11,7 +11,7 @@
 
 
 	<!-- =============================================================== -->
-	<!-- Resources                                                       -->
+	<!-- Resources -->
 	<!-- =============================================================== -->
 	<bean id="propertyConfigurer"
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -23,7 +23,7 @@
 	</bean>
 
 	<!-- =============================================================== -->
-	<!-- Data Source                                                     -->
+	<!-- Data Source -->
 	<!-- =============================================================== -->
 
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
@@ -39,7 +39,7 @@
 	</bean>
 
 	<!-- =============================================================== -->
-	<!-- Hibernate                                                       -->
+	<!-- Hibernate -->
 	<!-- =============================================================== -->
 
 	<bean id="sessionFactory"
@@ -54,7 +54,7 @@
 	</bean>
 
 	<!-- =============================================================== -->
-	<!-- Data Access Objects                                             -->
+	<!-- Data Access Objects -->
 	<!-- =============================================================== -->
 
 	<bean id="userDao" class="org.androidpn.server.dao.hibernate.UserDaoHibernate">
@@ -62,7 +62,7 @@
 	</bean>
 
 	<!-- =============================================================== -->
-	<!-- Services                                                        -->
+	<!-- Services -->
 	<!-- =============================================================== -->
 
 	<bean id="userService" class="org.androidpn.server.service.impl.UserServiceImpl">
@@ -70,22 +70,16 @@
 	</bean>
 
 	<!-- =============================================================== -->
-	<!-- SSL                                                             -->
+	<!-- SSL -->
 	<!-- =============================================================== -->
 
-	<!--
-	<bean id="tlsContextFactory"
-		class="org.androidpn.server.ssl2.ResourceBasedTLSContextFactory">
-		<constructor-arg value="classpath:bogus_mina_tls.cert" />
-		<property name="password" value="boguspw" />
-		<property name="trustManagerFactory">
-			<bean class="org.androidpn.server.ssl2.BogusTrustManagerFactory" />
-		</property>
-	</bean>
-	-->
+	<!-- <bean id="tlsContextFactory" class="org.androidpn.server.ssl2.ResourceBasedTLSContextFactory"> 
+		<constructor-arg value="classpath:bogus_mina_tls.cert" /> <property name="password" 
+		value="boguspw" /> <property name="trustManagerFactory"> <bean class="org.androidpn.server.ssl2.BogusTrustManagerFactory" 
+		/> </property> </bean> -->
 
 	<!-- =============================================================== -->
-	<!-- MINA                                                            -->
+	<!-- MINA -->
 	<!-- =============================================================== -->
 
 	<bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
@@ -114,11 +108,8 @@
 						</constructor-arg>
 					</bean>
 				</entry>
-				<!--
-				<entry key="logging">
-					<bean class="org.apache.mina.filter.logging.LoggingFilter" />
-				</entry>
-				-->
+				<!-- <entry key="logging"> <bean class="org.apache.mina.filter.logging.LoggingFilter" 
+					/> </entry> -->
 			</map>
 		</property>
 	</bean>
@@ -129,6 +120,11 @@
 		<property name="handler" ref="xmppHandler" />
 		<property name="filterChainBuilder" ref="filterChainBuilder" />
 		<property name="reuseAddress" value="true" />
+	</bean>
+
+	<bean id="getSessionConfig" factory-bean="ioAcceptor"
+		factory-method="getSessionConfig">
+		<property name="readerIdleTime" value="200"></property>
 	</bean>
 
 </beans>
