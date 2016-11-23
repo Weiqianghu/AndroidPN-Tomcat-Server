@@ -1,0 +1,13 @@
+package org.androidpn.server.service;
+
+import java.util.List;
+
+import com.sun.nio.sctp.Notification;
+
+public interface NotificationService {
+	void saveNotification(Notification notification);
+
+	List<Notification> findNotificationsByUsername(String username);
+
+	void deleteNotification(Notification notification);
+}
