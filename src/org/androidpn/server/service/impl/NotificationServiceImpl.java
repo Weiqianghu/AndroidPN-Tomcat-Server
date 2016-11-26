@@ -3,9 +3,9 @@ package org.androidpn.server.service.impl;
 import java.util.List;
 
 import org.androidpn.server.dao.NotificationDao;
+import org.androidpn.server.model.Notification;
 import org.androidpn.server.service.NotificationService;
 
-import com.sun.nio.sctp.Notification;
 
 public class NotificationServiceImpl implements NotificationService{
 	

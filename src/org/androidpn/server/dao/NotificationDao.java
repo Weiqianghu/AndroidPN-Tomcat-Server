@@ -2,7 +2,8 @@ package org.androidpn.server.dao;
 
 import java.util.List;
 
-import com.sun.nio.sctp.Notification;
+import org.androidpn.server.model.Notification;
+
 
 
 public interface NotificationDao {

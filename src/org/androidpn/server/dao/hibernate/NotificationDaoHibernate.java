@@ -3,9 +3,9 @@ package org.androidpn.server.dao.hibernate;
 import java.util.List;
 
 import org.androidpn.server.dao.NotificationDao;
+import org.androidpn.server.model.Notification;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
-import com.sun.nio.sctp.Notification;
 
 public class NotificationDaoHibernate extends HibernateDaoSupport implements NotificationDao {
 

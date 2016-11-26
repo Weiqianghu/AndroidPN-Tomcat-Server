@@ -2,7 +2,9 @@ package org.androidpn.server.service;
 
 import java.util.List;
 
-import com.sun.nio.sctp.Notification;
+import org.androidpn.server.model.Notification;
+
+
 
 public interface NotificationService {
 	void saveNotification(Notification notification);
