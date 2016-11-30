@@ -6,9 +6,8 @@ import org.androidpn.server.dao.NotificationDao;
 import org.androidpn.server.model.Notification;
 import org.androidpn.server.service.NotificationService;
 
+public class NotificationServiceImpl implements NotificationService {
 
-public class NotificationServiceImpl implements NotificationService{
-	
 	private NotificationDao notificationDao;
 
 	public void setNotificationDao(NotificationDao notificationDao) {
@@ -27,4 +26,7 @@ public class NotificationServiceImpl implements NotificationService{
 		notificationDao.deleteNotification(notification);
 	}
 
+	public void deleteNotification(String uuid) {
+		notificationDao.deleteNotification(uuid);
+	}
 }

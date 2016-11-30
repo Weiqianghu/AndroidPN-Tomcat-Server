@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.androidpn.server.model.Notification;
 
-
-
 public interface NotificationDao {
 
 	void saveNotification(Notification notification);
@@ -13,4 +11,6 @@ public interface NotificationDao {
 	List<Notification> findNotificationsByUsername(String username);
 
 	void deleteNotification(Notification notification);
+
+	void deleteNotification(String uuid);
 }

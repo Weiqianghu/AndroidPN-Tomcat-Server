@@ -18,9 +18,6 @@
 package org.androidpn.server.xmpp.push;
 
 import java.util.List;
-import java.util.Random;
-
-import javax.jws.soap.SOAPBinding.Use;
 
 import org.androidpn.server.model.Notification;
 import org.androidpn.server.model.User;
@@ -28,6 +25,7 @@ import org.androidpn.server.service.NotificationService;
 import org.androidpn.server.service.ServiceLocator;
 import org.androidpn.server.service.UserNotFoundException;
 import org.androidpn.server.service.UserService;
+import org.androidpn.server.util.StrUtil;
 import org.androidpn.server.xmpp.session.ClientSession;
 import org.androidpn.server.xmpp.session.SessionManager;
 import org.apache.commons.logging.Log;
@@ -75,17 +73,17 @@ public class NotificationManager {
 	 */
 	public void sendBroadcast(String apiKey, String title, String message, String uri) {
 		log.debug("sendBroadcast()...");
-		IQ notificationIQ = createNotificationIQ(apiKey, title, message, uri);
 		List<User> users = userService.getUsers();
 		for (User user : users) {
 			if (user != null) {
+				String id = StrUtil.generateId();
+				IQ notificationIQ = createNotificationIQ(id, apiKey, title, message, uri);
 				ClientSession session = sessionManager.getSession(user.getUsername());
 				if (session != null && session.getPresence().isAvailable()) {
 					notificationIQ.setTo(session.getAddress());
 					session.deliver(notificationIQ);
-				} else {
-					saveNotification(apiKey, user.getUsername(), title, message, uri);
 				}
+				saveNotification(apiKey, user.getUsername(), title, message, uri, id);
 			}
 		}
 	}
@@ -102,26 +100,55 @@ public class NotificationManager {
 	 * @param uri
 	 *            the uri
 	 */
-	public void sendNotifcationToUser(String apiKey, String username, String title, String message, String uri) {
+	public void sendNotifcationToUser(String apiKey, String username, String title, String message, String uri,
+			boolean shouldSave) {
 		log.debug("sendNotifcationToUser()...");
-		IQ notificationIQ = createNotificationIQ(apiKey, title, message, uri);
+		String id = StrUtil.generateId();
+		sendNotifcationToUser(apiKey, username, title, message, uri,id,shouldSave);
+	}
+
+	/**
+	 * Sends a newly created notification message to the specific user.
+	 * 
+	 * @param apiKey
+	 *            the API key
+	 * @param title
+	 *            the title
+	 * @param message
+	 *            the message details
+	 * @param uri
+	 *            the uri
+	 */
+	public void sendNotifcationToUser(String apiKey, String username, String title, String message, String uri) {
+		sendNotifcationToUser(apiKey, username, title, message, uri, true);
+	}
+
+	public void sendNotificationToUser(Notification notification, boolean shouldSave) {
+		if (notification == null) {
+			return;
+		}
+		sendNotifcationToUser(notification.getApiKey(), notification.getUsername(), notification.getTitle(),
+				notification.getMessage(), notification.getUri(), notification.getUuid(), false);
+	}
+
+	private void sendNotifcationToUser(String apiKey, String username, String title, String message, String uri,
+			String uuid, boolean shouldSave) {
+		log.debug("sendNotifcationToUser()...");
+		IQ notificationIQ = createNotificationIQ(uuid, apiKey, title, message, uri);
 		ClientSession session = sessionManager.getSession(username);
 		if (session != null) {
 			if (session.getPresence().isAvailable()) {
 				notificationIQ.setTo(session.getAddress());
 				session.deliver(notificationIQ);
-			} else {
-				saveNotification(apiKey, username, title, message, uri);
 			}
-		} else {
-			try {
-				User user = userService.getUserByUsername(username);
-				if (user != null) {
-					saveNotification(apiKey, username, title, message, uri);
-				}
-			} catch (UserNotFoundException e) {
-				e.printStackTrace();
+		}
+		try {
+			User user = userService.getUserByUsername(username);
+			if (user != null && shouldSave) {
+				saveNotification(apiKey, username, title, message, uri, uuid);
 			}
+		} catch (UserNotFoundException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -139,24 +166,22 @@ public class NotificationManager {
 	 * @param uri
 	 *            uri
 	 */
-	private void saveNotification(String apiKey, String username, String title, String message, String uri) {
+	private void saveNotification(String apiKey, String username, String title, String message, String uri,
+			String uuid) {
 		Notification notification = new Notification();
 		notification.setApiKey(apiKey);
 		notification.setUsername(username);
 		notification.setTitle(title);
 		notification.setMessage(message);
 		notification.setUri(uri);
+		notification.setUuid(uuid);
 		notificationService.saveNotification(notification);
 	}
 
 	/**
 	 * Creates a new notification IQ and returns it.
 	 */
-	private IQ createNotificationIQ(String apiKey, String title, String message, String uri) {
-		Random random = new Random();
-		String id = Integer.toHexString(random.nextInt());
-		// String id = String.valueOf(System.currentTimeMillis());
-
+	private IQ createNotificationIQ(String id, String apiKey, String title, String message, String uri) {
 		Element notification = DocumentHelper.createElement(QName.get("notification", NOTIFICATION_NAMESPACE));
 		notification.addElement("id").setText(id);
 		notification.addElement("apiKey").setText(apiKey);

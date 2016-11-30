@@ -25,23 +25,18 @@ public class NotificationApiController extends MultiActionController {
 		notificationManager = new NotificationManager();
 	}
 
-	public ModelAndView list(HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
+	public ModelAndView list(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		ModelAndView mav = new ModelAndView();
 		// mav.addObject("list", null);
 		mav.setViewName("notification/form");
 		return mav;
 	}
 
-	public void send(HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
-		String broadcast = ServletRequestUtils.getStringParameter(request,
-				"broadcast", "Y");
-		String username = ServletRequestUtils.getStringParameter(request,
-				"username");
+	public void send(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		String broadcast = ServletRequestUtils.getStringParameter(request, "broadcast", "Y");
+		String username = ServletRequestUtils.getStringParameter(request, "username");
 		String title = ServletRequestUtils.getStringParameter(request, "title");
-		String message = ServletRequestUtils.getStringParameter(request,
-				"message");
+		String message = ServletRequestUtils.getStringParameter(request, "message");
 		String uri = ServletRequestUtils.getStringParameter(request, "uri");
 
 		String apiKey = Config.getString("apiKey", "");
@@ -50,14 +45,13 @@ public class NotificationApiController extends MultiActionController {
 		if (broadcast.equalsIgnoreCase("Y")) {
 			notificationManager.sendBroadcast(apiKey, title, message, uri);
 		} else {
-			notificationManager.sendNotifcationToUser(apiKey, username, title,
-					message, uri);
+			notificationManager.sendNotifcationToUser(apiKey, username, title, message, uri, true);
 		}
-		
+
 		response.getWriter().print("{\"result\":\"0\",\"description\":\"success\"}");
-//		ModelAndView mav = new ModelAndView();
-//		mav.setViewName("redirect:notification.do");
-//		return mav;
+		// ModelAndView mav = new ModelAndView();
+		// mav.setViewName("redirect:notification.do");
+		// return mav;
 	}
 
 }

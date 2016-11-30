@@ -6,7 +6,6 @@ import org.androidpn.server.dao.NotificationDao;
 import org.androidpn.server.model.Notification;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
-
 public class NotificationDaoHibernate extends HibernateDaoSupport implements NotificationDao {
 
 	public void saveNotification(Notification notification) {
@@ -26,6 +25,16 @@ public class NotificationDaoHibernate extends HibernateDaoSupport implements Not
 
 	public void deleteNotification(Notification notification) {
 		getHibernateTemplate().delete(notification);
+	}
+
+	public void deleteNotification(String uuid) {
+		@SuppressWarnings("unchecked")
+		List<Notification> notifications = getHibernateTemplate().find("from Notification where uuid=?", uuid);
+		if (notifications != null && !notifications.isEmpty()) {
+			for (Notification notification : notifications) {
+				deleteNotification(notification);
+			}
+		}
 	}
 
 }

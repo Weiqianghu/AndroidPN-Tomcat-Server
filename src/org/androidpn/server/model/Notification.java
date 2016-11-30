@@ -30,6 +30,9 @@ public class Notification {
 	@Column(name = "uri", length = 256)
 	private String uri;
 
+	@Column(name = "uuid", nullable = false, length = 64, unique = true)
+	private String uuid;
+
 	public long getId() {
 		return id;
 	}
@@ -78,4 +81,11 @@ public class Notification {
 		this.uri = uri;
 	}
 
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
 }
