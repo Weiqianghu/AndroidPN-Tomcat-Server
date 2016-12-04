@@ -18,13 +18,18 @@
 <tr>
 	<td width="20%">To:</td>
 	<td width="80%">
-		<input type="radio" name="broadcast" value="Y" checked="checked" />  All (Broadcast) 
-        <input type="radio" name="broadcast" value="N" /> Single Device 
+		<input type="radio" name="broadcast" value="0" checked="checked" />  All (Broadcast) 
+        <input type="radio" name="broadcast" value="1" /> By Username 
+        <input type="radio" name="broadcast" value="2" /> By Alias
 	</td>
 </tr>
 <tr id="trUsername" style="display:none;">
 	<td>Username:</td>
 	<td><input type="text" id="username" name="username" value="" style="width:380px;" /></td>
+</tr>
+<tr id="trAlias" style="display:none;">
+	<td>Alias:</td>
+	<td><input type="text" id="alias" name="alias" value="" style="width:380px;" /></td>
 </tr>
 <tr>
 	<td>Title:</td>
@@ -61,16 +66,26 @@ $(function() {
 	$('input[name=broadcast]').click(function() {
 		if ($('input[name=broadcast]')[0].checked) {
 			$('#trUsername').hide();
-		} else {
+			$('#trAlias').hide();
+		} else if($('input[name=broadcast]')[1].checked){
 			$('#trUsername').show();
+			$('#trAlias').hide();
+		}else{
+			$('#trAlias').show();
+			$('#trUsername').hide();
 		}
 	});
 	
 	if ($('input[name=broadcast]')[0].checked) {
 		$('#trUsername').hide();
-	} else {
+		$('#trAlias').hide();
+	} else if($('input[name=broadcast]')[1].checked){
 		$('#trUsername').show();
-	}	
+		$('#trAlias').hide();
+	}else{
+		$('#trAlias').show();
+		$('#trUsername').hide();
+	}
 });
  
 //]]>

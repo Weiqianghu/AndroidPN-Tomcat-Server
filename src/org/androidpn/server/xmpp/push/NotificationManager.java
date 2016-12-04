@@ -76,15 +76,16 @@ public class NotificationManager {
 		List<User> users = userService.getUsers();
 		for (User user : users) {
 			if (user != null) {
-				String id = StrUtil.generateId();
-				IQ notificationIQ = createNotificationIQ(id, apiKey, title, message, uri);
-				ClientSession session = sessionManager.getSession(user.getUsername());
-				if (session != null && session.getPresence().isAvailable()) {
-					notificationIQ.setTo(session.getAddress());
-					session.deliver(notificationIQ);
-				}
-				saveNotification(apiKey, user.getUsername(), title, message, uri, id);
+				sendNotifcationToUser(apiKey, user.getUsername(), title, message, uri);
 			}
+		}
+	}
+
+	public void sendNotifcationToAlias(String apiKey, String alias, String title, String message, String uri,
+			boolean shouldSave) {
+		String username = sessionManager.getUsernameByAlias(alias);
+		if (username != null) {
+			sendNotifcationToUser(apiKey, username, title, message, uri, shouldSave);
 		}
 	}
 
@@ -104,7 +105,15 @@ public class NotificationManager {
 			boolean shouldSave) {
 		log.debug("sendNotifcationToUser()...");
 		String id = StrUtil.generateId();
-		sendNotifcationToUser(apiKey, username, title, message, uri,id,shouldSave);
+		sendNotifcationToUser(apiKey, username, title, message, uri, id, shouldSave);
+	}
+
+	public void sendNotificationToUser(Notification notification, boolean shouldSave) {
+		if (notification == null) {
+			return;
+		}
+		sendNotifcationToUser(notification.getApiKey(), notification.getUsername(), notification.getTitle(),
+				notification.getMessage(), notification.getUri(), notification.getUuid(), shouldSave);
 	}
 
 	/**
@@ -119,16 +128,8 @@ public class NotificationManager {
 	 * @param uri
 	 *            the uri
 	 */
-	public void sendNotifcationToUser(String apiKey, String username, String title, String message, String uri) {
+	private void sendNotifcationToUser(String apiKey, String username, String title, String message, String uri) {
 		sendNotifcationToUser(apiKey, username, title, message, uri, true);
-	}
-
-	public void sendNotificationToUser(Notification notification, boolean shouldSave) {
-		if (notification == null) {
-			return;
-		}
-		sendNotifcationToUser(notification.getApiKey(), notification.getUsername(), notification.getTitle(),
-				notification.getMessage(), notification.getUri(), notification.getUuid(), false);
 	}
 
 	private void sendNotifcationToUser(String apiKey, String username, String title, String message, String uri,
