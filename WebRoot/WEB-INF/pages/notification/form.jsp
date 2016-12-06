@@ -21,6 +21,7 @@
 		<input type="radio" name="broadcast" value="0" checked="checked" />  All (Broadcast) 
         <input type="radio" name="broadcast" value="1" /> By Username 
         <input type="radio" name="broadcast" value="2" /> By Alias
+        <input type="radio" name="broadcast" value="3" /> By Tag
 	</td>
 </tr>
 <tr id="trUsername" style="display:none;">
@@ -30,6 +31,10 @@
 <tr id="trAlias" style="display:none;">
 	<td>Alias:</td>
 	<td><input type="text" id="alias" name="alias" value="" style="width:380px;" /></td>
+</tr>
+<tr id="trTag" style="display:none;">
+	<td>Tag:</td>
+	<td><input type="text" id="tag" name="tag" value="" style="width:380px;" /></td>
 </tr>
 <tr>
 	<td>Title:</td>
@@ -67,24 +72,38 @@ $(function() {
 		if ($('input[name=broadcast]')[0].checked) {
 			$('#trUsername').hide();
 			$('#trAlias').hide();
+			$('#trTag').hide();
 		} else if($('input[name=broadcast]')[1].checked){
 			$('#trUsername').show();
 			$('#trAlias').hide();
-		}else{
+			$('#trTag').hide();
+		}else if($('input[name=broadcast]')[2].checked){
 			$('#trAlias').show();
 			$('#trUsername').hide();
+			$('#trTag').hide();
+		}else{
+			$('#trAlias').hide();
+			$('#trUsername').hide();
+			$('#trTag').show();
 		}
 	});
 	
 	if ($('input[name=broadcast]')[0].checked) {
 		$('#trUsername').hide();
 		$('#trAlias').hide();
+		$('#trTag').hide();
 	} else if($('input[name=broadcast]')[1].checked){
 		$('#trUsername').show();
 		$('#trAlias').hide();
-	}else{
+		$('#trTag').hide();
+	}else if($('input[name=broadcast]')[2].checked){
 		$('#trAlias').show();
 		$('#trUsername').hide();
+		$('#trTag').hide();
+	}else{
+		$('#trAlias').hide();
+		$('#trUsername').hide();
+		$('#trTag').show();
 	}
 });
  

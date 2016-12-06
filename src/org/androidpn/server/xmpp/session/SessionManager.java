@@ -30,6 +30,7 @@ import org.androidpn.server.xmpp.net.Connection;
 import org.androidpn.server.xmpp.net.ConnectionCloseListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.mina.util.ConcurrentHashSet;
 import org.xmpp.packet.JID;
 
 /**
@@ -52,6 +53,8 @@ public class SessionManager {
 	private Map<String, ClientSession> clientSessions = new ConcurrentHashMap<String, ClientSession>();
 
 	private Map<String, String> aliasUsernameMap = new ConcurrentHashMap<String, String>();
+
+	private Map<String, ConcurrentHashSet<String>> tagUsernamesMap = new ConcurrentHashMap<String, ConcurrentHashSet<String>>();
 
 	private final AtomicInteger connectionsCounter = new AtomicInteger(0);
 
@@ -226,6 +229,19 @@ public class SessionManager {
 
 	public String getUsernameByAlias(String alias) {
 		return aliasUsernameMap.get(alias);
+	}
+
+	public void setUserTag(String username, String tag) {
+		ConcurrentHashSet<String> usernames = (ConcurrentHashSet<String>) getUsernamesByTag(tag);
+		if (usernames == null) {
+			usernames = new ConcurrentHashSet<String>();
+		}
+		usernames.add(username);
+		tagUsernamesMap.put(tag, usernames);
+	}
+
+	public Set<String> getUsernamesByTag(String tag) {
+		return tagUsernamesMap.get(tag);
 	}
 
 }

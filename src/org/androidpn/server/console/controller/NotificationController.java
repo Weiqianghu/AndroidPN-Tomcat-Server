@@ -50,6 +50,7 @@ public class NotificationController extends MultiActionController {
 		String broadcast = ServletRequestUtils.getStringParameter(request, "broadcast", "0");
 		String username = ServletRequestUtils.getStringParameter(request, "username");
 		String alias = ServletRequestUtils.getStringParameter(request, "alias");
+		String tag = ServletRequestUtils.getStringParameter(request, "tag");
 		String title = ServletRequestUtils.getStringParameter(request, "title");
 		String message = ServletRequestUtils.getStringParameter(request, "message");
 		String uri = ServletRequestUtils.getStringParameter(request, "uri");
@@ -61,8 +62,10 @@ public class NotificationController extends MultiActionController {
 			notificationManager.sendBroadcast(apiKey, title, message, uri);
 		} else if (broadcast.equalsIgnoreCase("1")) {
 			notificationManager.sendNotifcationToUser(apiKey, username, title, message, uri, true);
-		} else {
+		} else if (broadcast.equalsIgnoreCase("2")) {
 			notificationManager.sendNotifcationToAlias(apiKey, alias, title, message, uri, true);
+		} else {
+			notificationManager.sendNotifcationToTag(apiKey, tag, title, message, uri, true);
 		}
 
 		ModelAndView mav = new ModelAndView();

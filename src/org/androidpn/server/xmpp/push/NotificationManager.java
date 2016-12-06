@@ -18,6 +18,7 @@
 package org.androidpn.server.xmpp.push;
 
 import java.util.List;
+import java.util.Set;
 
 import org.androidpn.server.model.Notification;
 import org.androidpn.server.model.User;
@@ -86,6 +87,16 @@ public class NotificationManager {
 		String username = sessionManager.getUsernameByAlias(alias);
 		if (username != null) {
 			sendNotifcationToUser(apiKey, username, title, message, uri, shouldSave);
+		}
+	}
+
+	public void sendNotifcationToTag(String apiKey, String tag, String title, String message, String uri,
+			boolean shouldSave) {
+		Set<String> usernames = sessionManager.getUsernamesByTag(tag);
+		if (usernames != null) {
+			for (String username : usernames) {
+				sendNotifcationToUser(apiKey, username, title, message, uri, shouldSave);
+			}
 		}
 	}
 
