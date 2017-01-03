@@ -84,7 +84,7 @@ public class PresenceUpdateHandler {
 					List<Notification> notifications = notificationService
 							.findNotificationsByUsername(session.getUsername());
 					for (Notification notification : notifications) {
-						notificationManager.sendNotificationToUser(notification, false);
+						notificationManager.reSendNotificationToUser(notification);
 					}
 
 				}

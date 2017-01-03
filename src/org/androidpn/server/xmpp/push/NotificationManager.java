@@ -60,93 +60,71 @@ public class NotificationManager {
 		userService = ServiceLocator.getUserService();
 	}
 
-	/**
-	 * Broadcasts a newly created notification message to all connected users.
-	 * 
-	 * @param apiKey
-	 *            the API key
-	 * @param title
-	 *            the title
-	 * @param message
-	 *            the message details
-	 * @param uri
-	 *            the uri
-	 */
-	public void sendBroadcast(String apiKey, String title, String message, String uri) {
+	public void sendBroadcast(String apiKey, String title, String message, String uri, String imgUrl) {
 		log.debug("sendBroadcast()...");
 		List<User> users = userService.getUsers();
 		for (User user : users) {
 			if (user != null) {
-				sendNotifcationToUser(apiKey, user.getUsername(), title, message, uri);
+				sendNotifcationByUsername(apiKey, user.getUsername(), title, message, uri, imgUrl);
 			}
 		}
 	}
 
+	public void sendNotifcationToUser(String apiKey, String username, String title, String message, String uri,
+			String imgUrl) {
+		log.debug("sendNotifcationToUser()...");
+		sendNotifcationByUsername(apiKey, username, title, message, uri, imgUrl);
+	}
+
 	public void sendNotifcationToAlias(String apiKey, String alias, String title, String message, String uri,
-			boolean shouldSave) {
+			String imgUrl) {
+		log.debug("sendNotifcationToAlias()...");
 		String username = sessionManager.getUsernameByAlias(alias);
 		if (username != null) {
-			sendNotifcationToUser(apiKey, username, title, message, uri, shouldSave);
+			sendNotifcationByUsername(apiKey, username, title, message, uri, imgUrl);
 		}
 	}
 
 	public void sendNotifcationToTag(String apiKey, String tag, String title, String message, String uri,
-			boolean shouldSave) {
+			String imgUrl) {
+		log.debug("sendNotifcationToTag()...");
 		Set<String> usernames = sessionManager.getUsernamesByTag(tag);
 		if (usernames != null) {
 			for (String username : usernames) {
-				sendNotifcationToUser(apiKey, username, title, message, uri, shouldSave);
+				sendNotifcationByUsername(apiKey, username, title, message, uri, imgUrl);
 			}
 		}
 	}
 
-	/**
-	 * Sends a newly created notification message to the specific user.
-	 * 
-	 * @param apiKey
-	 *            the API key
-	 * @param title
-	 *            the title
-	 * @param message
-	 *            the message details
-	 * @param uri
-	 *            the uri
-	 */
-	public void sendNotifcationToUser(String apiKey, String username, String title, String message, String uri,
-			boolean shouldSave) {
-		log.debug("sendNotifcationToUser()...");
-		String id = StrUtil.generateId();
-		sendNotifcationToUser(apiKey, username, title, message, uri, id, shouldSave);
-	}
-
-	public void sendNotificationToUser(Notification notification, boolean shouldSave) {
+	public void reSendNotificationToUser(Notification notification) {
 		if (notification == null) {
 			return;
 		}
-		sendNotifcationToUser(notification.getApiKey(), notification.getUsername(), notification.getTitle(),
-				notification.getMessage(), notification.getUri(), notification.getUuid(), shouldSave);
+		log.debug("reSendNotificationToUser()...");
+		sendNotifcation(notification.getUuid(), notification.getApiKey(), notification.getUsername(),
+				notification.getTitle(), notification.getMessage(), notification.getUri(), notification.getImgUrl(),
+				false);
 	}
 
-	/**
-	 * Sends a newly created notification message to the specific user.
-	 * 
-	 * @param apiKey
-	 *            the API key
-	 * @param title
-	 *            the title
-	 * @param message
-	 *            the message details
-	 * @param uri
-	 *            the uri
-	 */
-	private void sendNotifcationToUser(String apiKey, String username, String title, String message, String uri) {
-		sendNotifcationToUser(apiKey, username, title, message, uri, true);
+	private void sendNotifcationByUsername(String apiKey, String username, String title, String message, String uri,
+			String imgUrl) {
+		log.debug("sendNotifcationByUsername()...");
+		String uuid = StrUtil.generateId();
+		sendNotifcation(uuid, apiKey, username, title, message, uri, imgUrl, true);
 	}
 
-	private void sendNotifcationToUser(String apiKey, String username, String title, String message, String uri,
-			String uuid, boolean shouldSave) {
-		log.debug("sendNotifcationToUser()...");
-		IQ notificationIQ = createNotificationIQ(uuid, apiKey, title, message, uri);
+	private void sendNotifcation(String uuid, String apiKey, String username, String title, String message, String uri,
+			String imgUrl, boolean shouldSave) {
+		log.debug("sendNotifcation()...");
+		try {
+			User user = userService.getUserByUsername(username);
+			if (user != null && shouldSave) {
+				saveNotification(uuid, apiKey, username, title, message, uri, imgUrl);
+			}
+		} catch (UserNotFoundException e) {
+			e.printStackTrace();
+		}
+		IQ notificationIQ = createNotificationIQ(uuid, apiKey, title, message, uri, imgUrl);
 		ClientSession session = sessionManager.getSession(username);
 		if (session != null) {
 			if (session.getPresence().isAvailable()) {
@@ -154,32 +132,10 @@ public class NotificationManager {
 				session.deliver(notificationIQ);
 			}
 		}
-		try {
-			User user = userService.getUserByUsername(username);
-			if (user != null && shouldSave) {
-				saveNotification(apiKey, username, title, message, uri, uuid);
-			}
-		} catch (UserNotFoundException e) {
-			e.printStackTrace();
-		}
 	}
 
-	/**
-	 * 保存离线消息
-	 * 
-	 * @param apiKey
-	 *            apiKey
-	 * @param username
-	 *            username
-	 * @param title
-	 *            title
-	 * @param message
-	 *            message
-	 * @param uri
-	 *            uri
-	 */
-	private void saveNotification(String apiKey, String username, String title, String message, String uri,
-			String uuid) {
+	private void saveNotification(String uuid, String apiKey, String username, String title, String message, String uri,
+			String imgUrl) {
 		Notification notification = new Notification();
 		notification.setApiKey(apiKey);
 		notification.setUsername(username);
@@ -187,19 +143,21 @@ public class NotificationManager {
 		notification.setMessage(message);
 		notification.setUri(uri);
 		notification.setUuid(uuid);
+		notification.setImgUrl(imgUrl);
 		notificationService.saveNotification(notification);
 	}
 
 	/**
 	 * Creates a new notification IQ and returns it.
 	 */
-	private IQ createNotificationIQ(String id, String apiKey, String title, String message, String uri) {
+	private IQ createNotificationIQ(String id, String apiKey, String title, String message, String uri, String imgUrl) {
 		Element notification = DocumentHelper.createElement(QName.get("notification", NOTIFICATION_NAMESPACE));
 		notification.addElement("id").setText(id);
 		notification.addElement("apiKey").setText(apiKey);
 		notification.addElement("title").setText(title);
 		notification.addElement("message").setText(message);
 		notification.addElement("uri").setText(uri);
+		notification.addElement("imgUrl").setText(imgUrl);
 
 		IQ iq = new IQ();
 		iq.setType(IQ.Type.set);

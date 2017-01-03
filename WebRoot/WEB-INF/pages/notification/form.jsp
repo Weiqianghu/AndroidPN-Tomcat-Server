@@ -13,7 +13,7 @@
 
 <%--<div style="background:#eee; margin:20px 0px; padding:20px; width:500px; border:solid 1px #999;">--%>
 <div style="margin:20px 0px;">
-<form action="notification.do?action=send" method="post" style="margin: 0px;">
+<form action="notification.do?action=send" method="post" style="margin: 0px;" enctype="multipart/form-data">
 <table width="600" cellpadding="4" cellspacing="0" border="0">
 <tr>
 	<td width="20%">To:</td>
@@ -38,11 +38,11 @@
 </tr>
 <tr>
 	<td>Title:</td>
-	<td><input type="text" id="title" name="title" value="Dokdo Island" style="width:380px;" /></td>
+	<td><input type="text" id="title" name="title" value="Message Title" style="width:380px;" /></td>
 </tr>
 <tr>
 	<td>Message:</td>
-	<td><textarea id="message" name="message" style="width:380px; height:80px;" >Dokdo is a Korean island, the far east of the Korean territory. No doubt! No question! Don't mention it any more!</textarea></td>
+	<td><textarea id="message" name="message" style="width:380px; height:80px;" >Message Content!</textarea></td>
 </tr>
 <%--
 <tr>
@@ -53,7 +53,13 @@
 <tr>
 	<td>URI:</td>
 	<td><input type="text" id="uri" name="uri" value="" style="width:380px;" />
-	    <br/><span style="font-size:0.8em">ex) http://www.dokdocorea.com, geo:37.24,131.86, tel:111-222-3333</span>
+	    <br/><span style="font-size:0.8em">ex) http://weiqianghu.github.io/</span>
+	</td>
+</tr>
+<tr>
+	<td>Image:</td>
+	<td><input type="file" id="image" name="image" value="" style="width:380px;" />
+	    <br/><span style="font-size:0.8em">Only Image !</span>
 	</td>
 </tr>
 <tr>

@@ -18,7 +18,7 @@ public class DemoAndroidpn {
 		String uri = "http://www.baidu.com";
 
 		NotificationManager notificationManager = new NotificationManager();
-		notificationManager.sendBroadcast(apiKey, title, message, uri);
+//		notificationManager.sendBroadcast(apiKey, title, message, uri);
 		// notificationManager.sendNotifcationToUser(apiKey, username, title,
 		// message, uri);
 

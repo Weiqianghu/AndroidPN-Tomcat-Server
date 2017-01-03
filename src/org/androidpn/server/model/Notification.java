@@ -32,6 +32,9 @@ public class Notification {
 
 	@Column(name = "uuid", nullable = false, length = 64, unique = true)
 	private String uuid;
+	
+	@Column(name = "imgUrl", length = 256)
+	private String imgUrl;
 
 	public long getId() {
 		return id;
@@ -87,5 +90,13 @@ public class Notification {
 
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
+	}
+
+	public String getImgUrl() {
+		return imgUrl;
+	}
+
+	public void setImgUrl(String imgUrl) {
+		this.imgUrl = imgUrl;
 	}
 }
